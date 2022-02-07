@@ -10,7 +10,7 @@ def GenerateGrille(width, nbr_color) :
 
     Input : 
         - width : type = int, taille de la longueur de la grille de taille width x width
-        - nbr_color : type = int, nombre de couleur diférentes
+        - nbr_color : type = int, nombre de couleurs diférentes
     
     Output : Array de la grille initiale
     
@@ -27,7 +27,7 @@ def GenerateGrille(width, nbr_color) :
 
 def MajCell(grill ,new_val, old_val, pos_x, pos_y, width) : 
     """
-    Description : fonction qui mais a jour chaque cellule de la grille 
+    Description : fonction qui met a jour chaque cellule de la grille 
     
     Input : 
         - grill : type = array, matrice de taille width**2
@@ -80,8 +80,8 @@ def Tourpartour(grill, width, old_val,listvalue, counter = 0):
         - grill : type = array, plateau de jeu
         - width : type = int, taille de la grille
         - old_val : type = int, valeur actuelle de la case [0,0]
-        - listvalue : type = list, liste des valeur possible de la nouvelle valeur de la case
-        - counter : type = int, count du nombre de coups valable joués
+        - listvalue : type = list, liste des valeurs possibles de la nouvelle valeur de la case
+        - counter : type = int, count du nombre de coups valables joués
 
     Output : la fin de la partie
     """
@@ -89,11 +89,11 @@ def Tourpartour(grill, width, old_val,listvalue, counter = 0):
     end = AssertEnd(grill)
     if end == True: 
         return "EndGame"
-    new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
+    new_val_str = input("Couleur de case ? Mettre 'end' pour finir :  ")
     while new_val_str not in listvalue:
         if new_val_str == "end" :
             return "Endgame"
-        new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
+        new_val_str = input("Couleur de case ? Mettre 'end' pour finir :  ")
     new_val = int(new_val_str)
     if old_val != new_val :
         counter +=1 
@@ -107,11 +107,11 @@ def Tourpartour(grill, width, old_val,listvalue, counter = 0):
 
 def Partie(width, nbr_color) :
     """
-    Description : Fonction qui produit une partie entiere
+    Description : Fonction qui produit une partie entière
 
     Input : 
         - width : type = int, taille de la longueur de la grille de taille width x width
-        - nbr_color : type = int, nombre de couleur diférentes
+        - nbr_color : type = int, nombre de couleurs diférentes
     
     Output : 
         déroulement de toute la partie
