@@ -71,7 +71,7 @@ def AssertEnd(grill) :
                 return False
     return True
 
-def Tourpartour(grill, width, old_val,listvalue, counter = 0):
+def Tourpartour(grill, width, old_val,listvalue, max_moves,counter = 0):
 
     """
     Description : Fonction recursive qui joue au tour par tour la partie
@@ -101,7 +101,10 @@ def Tourpartour(grill, width, old_val,listvalue, counter = 0):
     
     print(grill)
     print(counter)
-    Tourpartour(grill,width,new_val,listvalue, counter)
+    if counter >= max_moves : 
+        print( "You lost")
+    else : 
+        Tourpartour(grill,width,new_val,listvalue, max_moves,counter)
     
 
 
@@ -116,6 +119,7 @@ def Partie(width, nbr_color) :
     Output : 
         déroulement de toute la partie
     """
+    max_moves = np.round((25*(2*width)*nbr_color)/((14+14)*6))
     
     grill =   GenerateGrille(width, nbr_color)
 
@@ -125,7 +129,7 @@ def Partie(width, nbr_color) :
     
     print(grill)
 
-    Tourpartour(grill, width, old_val, listvalue)
+    Tourpartour(grill, width, old_val, listvalue,max_moves)
 
 
 #print(GenerateGrille(10,4))
@@ -138,4 +142,4 @@ def Partie(width, nbr_color) :
 #print(MajCell(test_grille, 1, 2 ,0,0,10))
 #Tourpartour(test_grille,10,2,0,listvalue)
 
-Partie(12,5)
+Partie(14,5)
