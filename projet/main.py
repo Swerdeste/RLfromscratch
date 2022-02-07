@@ -1,6 +1,5 @@
 
-from ast import While
-from cgi import test
+
 import random
 import numpy as np
 
@@ -28,28 +27,43 @@ def GenerateGrille(width, nbr_color) :
 
 def MajCell(grill ,new_val, old_val, pos_x, pos_y, width) : 
     """
-    Des
+    Description : fonction qui mais a jour chaque cellule de la grille 
     
+    Input : 
+        - grill : type = array, matrice de taille width**2
+        - new_val : type = int, nouvelle valeur de la case [0,0]
+        - old_val : type = int, valeur actuelle de la case [0,0]
+        - pos_x : type = int, position selon l'axe x
+        - pos_y : type = int, position selon l'axe y
+        - width : taille de la grille
+
+    Output : Grille mise à jour 
     """
 
     if old_val == new_val or grill[pos_x][pos_y] != old_val:
         return 
-    grill[pos_x][pos_y] = new_val # change the color of the current box
+    grill[pos_x][pos_y] = new_val 
 
     if pos_x > 0:
-        MajCell(grill ,new_val, old_val, pos_x - 1, pos_y, width) # on box to the left
+        MajCell(grill ,new_val, old_val, pos_x - 1, pos_y, width) 
     if pos_x < width - 1:
-        MajCell(grill ,new_val, old_val, pos_x + 1, pos_y, width) # on box to the right
+        MajCell(grill ,new_val, old_val, pos_x + 1, pos_y, width) 
     if pos_y > 0:
-        MajCell(grill ,new_val, old_val, pos_x, pos_y - 1, width) # on box to up
+        MajCell(grill ,new_val, old_val, pos_x, pos_y - 1, width) 
     if pos_y < width - 1:
-        MajCell(grill ,new_val, old_val, pos_x, pos_y + 1, width) # on box to down
+        MajCell(grill ,new_val, old_val, pos_x, pos_y + 1, width) 
 
-
-print(type(random.randint(0,1)))
 
 
 def AssertEnd(grill) : 
+    """
+    Description : Fonction qui verifie si la grille est complète (i.e si toute les eléments de la matrice sont égaux)
+
+    Input : 
+        - grill : type = array, plateau de jeu
+
+    Output : Booleen confirmant la fin de la partie (True) ou non (False)
+    """
     init = grill[0][0]
     for x in grill : 
         for y in x : 
@@ -58,6 +72,20 @@ def AssertEnd(grill) :
     return True
 
 def Tourpartour(grill, width, old_val,listvalue, counter = 0):
+
+    """
+    Description : Fonction recursive qui joue au tour par tour la partie
+    
+    Input : 
+        - grill : type = array, plateau de jeu
+        - width : type = int, taille de la grille
+        - old_val : type = int, valeur actuelle de la case [0,0]
+        - listvalue : type = list, liste des valeur possible de la nouvelle valeur de la case
+        - counter : type = int, count du nombre de coups valable joués
+
+    Output : la fin de la partie
+    """
+
     end = AssertEnd(grill)
     if end == True: 
         return "EndGame"
@@ -78,6 +106,16 @@ def Tourpartour(grill, width, old_val,listvalue, counter = 0):
 
 
 def Partie(width, nbr_color) :
+    """
+    Description : Fonction qui produit une partie entiere
+
+    Input : 
+        - width : type = int, taille de la longueur de la grille de taille width x width
+        - nbr_color : type = int, nombre de couleur diférentes
+    
+    Output : 
+        déroulement de toute la partie
+    """
     
     grill =   GenerateGrille(width, nbr_color)
 
