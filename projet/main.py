@@ -1,7 +1,33 @@
-
-
 import random
 import numpy as np
+import random, pygame, sys, pygame.font
+from tkinter import messagebox as mb
+import tkinter as tk
+from buttons import *
+
+
+pygame.init()
+FONT = pygame.font.SysFont('arial', 20, True)
+
+Matrixsize = 40
+
+WHITE    = (255, 255, 255)
+BLACK    = (  0,   0,   0)
+RED      = (255,   0,   0)
+GREEN    = (  0, 255,   0)
+BLUE     = (  0,   0, 255)
+YELLOW   = (255, 255,   0)
+ORANGE   = (255, 128,   0)
+PURPLE   = (128,   0, 200)
+PINK     = (255,   0, 255)
+GRAY     = (100, 100, 100)
+
+WINDOWWIDTH = 400
+WINDOWHEIGHT = 400
+DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+
+COLORS = (RED, GREEN, BLUE, YELLOW, ORANGE, PURPLE, PINK, GRAY, BLACK)
+
 
 def GenerateGrille(width, nbr_color) : 
 
@@ -23,7 +49,28 @@ def GenerateGrille(width, nbr_color) :
         grill.append(column)
     return np.array(grill)
 
+def LTCoordOfBox(boxx, boxy, width):
+    # Returns the x and y of the left-topmost pixel of the xth & yth box.
+    xmargin = int((WINDOWWIDTH - (width * Matrixsize)) / 2)
+    ymargin = int((WINDOWHEIGHT - (width * Matrixsize)) / 2)
+    return (boxx * Matrixsize + xmargin, boxy * Matrixsize + ymargin)
 
+
+def ConstruGrille(board, width):
+    for x in range(width):
+        for y in range(width):
+            left, top = LTCoordOfBox(x, y, width)
+            r, g, b = COLORS[board[y][x]]
+
+            pygame.draw.rect(DISPLAYSURF, (r, g, b), (left, top, Matrixsize, Matrixsize))
+
+def AffichageTexte(count):
+    countText = FONT.render("Nombre de Coups joués " + str(count), False, BLACK)
+    DISPLAYSURF.blit(countText, (600, 20))
+    resetText = FONT.render("Change size of the board and reset: ", False, BLACK)
+    DISPLAYSURF.blit(resetText, (40,20))
+    difficulty = FONT.render("Difficulty", False, BLACK)
+    DISPLAYSURF.blit(difficulty, (0, 150))
 
 def MajCell(grill ,new_val, old_val, pos_x, pos_y, width) : 
     """
@@ -71,8 +118,26 @@ def AssertEnd(grill) :
                 return False
     return True
 
-def Tourpartour(grill, width, old_val,listvalue, max_moves,counter = 0):
+def CreatButtons():
+    buttons = []
 
+    for x in range(4,33,4) : 
+        buttons.append(PygameButton(RED, 285 + x/4 * 30, 17, 25, 25, str(x)))
+    for x in range(3, 8) :
+        buttons.append(PygameButton(YELLOW, 0, 100+25*x, 25,25, str(x), True))
+    return buttons
+
+def CreatPallete(nColors, width):
+    """
+    INUTILE
+    """
+    pallete = []
+    for x in range (nColors):
+        pallete.append(Colors(50*x, 750, x, width))
+    return pallete
+
+def Tourpartour(grill, width, old_val,listvalue, max_moves,counter = 0):
+    
     """
     Description : Fonction recursive qui joue au tour par tour la partie
     
@@ -87,13 +152,18 @@ def Tourpartour(grill, width, old_val,listvalue, max_moves,counter = 0):
     """
 
     end = AssertEnd(grill)
+    if counter == max_moves +1 : 
+        #mb.showinfo("Defaite", "C'est perdu : " + str(counter) + " coups joués") 
+        return 
     if end == True: 
-        return "EndGame"
-    new_val_str = input("Couleur de case ? Mettre 'end' pour finir :  ")
+        #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
+        return 
+    new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
     while new_val_str not in listvalue:
         if new_val_str == "end" :
-            return "Endgame"
-        new_val_str = input("Couleur de case ? Mettre 'end' pour finir :  ")
+            return #mb.showinfo("Quitté", "Vous avez arrété la partie")
+            
+        new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
     new_val = int(new_val_str)
     if old_val != new_val :
         counter +=1 
@@ -101,10 +171,12 @@ def Tourpartour(grill, width, old_val,listvalue, max_moves,counter = 0):
     
     print(grill)
     print(counter)
-    if counter >= max_moves : 
-        print( "You lost")
-    else : 
-        Tourpartour(grill,width,new_val,listvalue, max_moves,counter)
+    ConstruGrille(grill, width)
+
+    pygame.display.update()
+    Tourpartour(grill,width,new_val,listvalue, max_moves,counter)
+
+
     
 
 
@@ -121,25 +193,35 @@ def Partie(width, nbr_color) :
     """
     max_moves = np.round((25*(2*width)*nbr_color)/((14+14)*6))
     
+    
     grill =   GenerateGrille(width, nbr_color)
+    global COLORS, WINDOWWIDTH, WINDOWHEIGHT, DISPLAYSURF, FONT
+    root = tk.Tk()
+    root.withdraw()
+    FPS = 10
+
+    WINDOWWIDTH = WINDOWHEIGHT = Matrixsize*width + 200
+
+    pygame.display.set_caption("Flood it!")
+    FPSCLOCK = pygame.time.Clock()
+    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    DISPLAYSURF.fill(GRAY)
+    for x in range(0,nbr_color + 1) :
+        PygameButton(COLORS[x],x * 25, 17, 25, 25, str(x)).Construction(DISPLAYSURF)
 
     listvalue = listvalue = ["{}".format(i) for i in range(nbr_color)]
 
     old_val= grill[0,0]
+
     
     print(grill)
 
+    
+    ConstruGrille(grill, width)
+    FPSCLOCK.tick(FPS)
+
+    pygame.display.update()
+
     Tourpartour(grill, width, old_val, listvalue,max_moves)
 
-
-#print(GenerateGrille(10,4))
-#listvalue = ["{}".format(i) for i in range(4)]
-#init_grille = np.array([[3,2,1,0,3,3,1,1,2,0], [1,0,2,0,3,1,1,3,0,0], [0,1,3, 3, 0, 0, 0, 3, 3, 0], [3, 2, 1, 1, 2, 2, 1, 2, 0, 3], [1, 3, 1, 0, 0, 0, 2, 1, 3, 2], [1, 3, 0, 3, 3, 3, 1, 2, 3, 2], [3, 3, 3, 1, 2, 0, 1, 3, 0, 3], [1, 2, 3, 3, 3, 1, 1, 3, 2, 2], [0, 2, 3, 1, 0, 1, 1, 1, 1, 2], [3, 2, 0, 1, 0, 1, 2, 3, 0, 3]])
-
-#test_grille = np.array([[2,2,1,0,3,3,1,1,2,0], [1,0,2,0,3,1,1,3,0,0], [0,1,3, 3, 0, 0, 0, 3, 3, 0], [3, 2, 1, 1, 2, 2, 1, 2, 0, 3], [1, 3, 1, 0, 0, 0, 2, 1, 3, 2], [1, 3, 0, 3, 3, 3, 1, 2, 3, 2], [3, 3, 3, 1, 2, 0, 1, 3, 0, 3], [1, 2, 3, 3, 3, 1, 1, 3, 2, 2], [0, 2, 3, 1, 0, 1, 1, 1, 1, 2], [3, 2, 0, 1, 0, 1, 2, 3, 0, 3]])
-#print(test_grille)
-#MajCell(test_grille, 1, 2 ,0,0,10)
-#print(MajCell(test_grille, 1, 2 ,0,0,10))
-#Tourpartour(test_grille,10,2,0,listvalue)
-
-Partie(14,5)
+Partie(8,3)
