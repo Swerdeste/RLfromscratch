@@ -144,7 +144,7 @@ class Game() :
         Game.ConstruGrille(self)
 
         pygame.display.update()
-        Game.Tourpartour(self, old_val,listvalue, max_moves,counter)
+        Game.Tourpartour(self, new_val,listvalue, max_moves,counter)
 
     
 
