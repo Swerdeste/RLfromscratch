@@ -38,6 +38,8 @@ class Game() :
         self.DISPLAYSURF = DISPLAYSURF
         self.Matrixsize = Matrixsize 
         self.grill = []
+        self.positions = set()
+        self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
     def GenerateGrille(self) :
 
         for col in range(self.width) :
@@ -75,11 +77,14 @@ class Game() :
 
         Output : Grille mise à jour 
         """
+        if self.grill[pos_x][pos_y]==new_val : 
+            self.positions.add((pos_x,pos_y))
 
         if old_val == new_val or self.grill[pos_x][pos_y] != old_val:
             return 
-        self.grill[pos_x][pos_y] = new_val 
 
+        self.grill[pos_x][pos_y] = new_val 
+        self.positions.add((pos_x,pos_y))
         if pos_x > 0:
             Game.MajCell(self ,new_val, old_val, pos_x - 1, pos_y) 
         if pos_x < self.width - 1:
@@ -89,7 +94,45 @@ class Game() :
         if pos_y < self.width - 1:
             Game.MajCell(self ,new_val, old_val, pos_x, pos_y + 1) 
     
+    def Get_Positions(self,grill,val,): 
+        
+        for a in self.map : 
+            for e in a :
+                pos_x,pos_y = e[0],e[1]
+                if e in self.positions:
+                    if pos_x > 0:
+                        if (pos_x-1,pos_y) not in self.positions and grill[pos_x-1][pos_y]==val : 
+                            self.positions.add((pos_x-1,pos_y))
+                    if pos_x <self.width-1:
+                        if (pos_x+1,pos_y) not in self.positions and grill[pos_x+1][pos_y]==val : 
+                            self.positions.add((pos_x+1,pos_y))
+                    if pos_y > 0:
+                        if (pos_x,pos_y-1) not in self.positions and grill[pos_x][pos_y-1]==val : 
+                            self.positions.add((pos_x,pos_y-1))
+                    if pos_y <self.width-1:
+                        if (pos_x,pos_y+1) not in self.positions and grill[pos_x][pos_y+1]==val : 
+                            self.positions.add((pos_x,pos_y+1))
+                else : 
+                    if pos_x > 0:
+                        if (pos_x-1,pos_y) in self.positions and grill[pos_x][pos_y]==val : 
+                            self.positions.add((pos_x,pos_y))
+                    if pos_x <self.width-1:
+                        if (pos_x+1,pos_y) in self.positions and grill[pos_x][pos_y]==val : 
+                            self.positions.add((pos_x,pos_y))
+                    if pos_y > 0:
+                        if (pos_x,pos_y)  in self.positions and grill[pos_x][pos_y]==val : 
+                            self.positions.add((pos_x,pos_y))
+                    if pos_y <self.width-1:
+                        if (pos_x,pos_y)  in self.positions and grill[pos_x][pos_y]==val : 
+                            self.positions.add((pos_x,pos_y))
 
+
+    def possible_states(self,listvalue): 
+        colors = [e for e in listvalue if e!= self.grill[0][0]]
+        for e in colors: 
+            state_bis = np.copy(self.grill)
+            
+        pass
     def AssertEnd(self) : 
         """
         Description : Fonction qui verifie si la grille est complète (i.e si toute les eléments de la matrice sont égaux)
@@ -138,11 +181,11 @@ class Game() :
         if old_val != new_val :
             counter +=1 
         Game.MajCell(self ,new_val, old_val, 0,0)
-    
+        
         print(self.grill)
         print(counter)
+        Game.Get_Positions(self,self.grill,new_val)
         Game.ConstruGrille(self)
-
         pygame.display.update()
         Game.Tourpartour(self, new_val,listvalue, max_moves,counter)
 
@@ -174,7 +217,7 @@ class Game() :
         FPSCLOCK = pygame.time.Clock()
         DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
         DISPLAYSURF.fill(GRAY)
-        for x in range(0,self.nbr_color + 1) :
+        for x in range(0,self.nbr_color ) :
             PygameButton(COLORS[x],x * 25, 17, 25, 25, str(x)).Construction(DISPLAYSURF)
 
         listvalue = listvalue = ["{}".format(i) for i in range(self.nbr_color)]
@@ -192,5 +235,5 @@ class Game() :
 
         Game.Tourpartour(self, old_val, listvalue,max_moves)
     
-une_p = Game(8,3)
+une_p = Game(5,4)
 une_p.Partie()
