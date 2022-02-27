@@ -7,7 +7,7 @@ from idk import *
 from helper import plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LR = 0.03
 
 class Agent() :
     def __init__(self) :
@@ -15,7 +15,7 @@ class Agent() :
         self.epsilon = 0
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(10, 10, 3)
+        self.model = Linear_QNet(10, 10, 4)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         
     
@@ -28,14 +28,16 @@ class Agent() :
         self.epsilon = 80 - self.n_games
         nb_col = game.get_nb_col()
         final_move = [0 for i in range(nb_col)] 
-        #if random.randint(0, 200) > self.epsilon:
-        move = random.randint(0, nb_col -1)
-        final_move[move] = 1
+        if random.randint(0, 200) > self.epsilon:
+            move = random.randint(0, nb_col -1)
+            final_move[move] = 1
         #else : 
-        #    state0 = torch.tensor(state, dtype=torch.float)
-        #    prediction = self.model(state0)
-        #    move = torch.argmax(prediction).item()
-        #    final_move[move] = 1
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model(state0)
+            move = torch.argmax(prediction).item()
+            print("-------",state0,"-------",prediction)
+            print("++*fdfdd", move,"fdfdfd", final_move)
+            final_move[move] = 1
         return final_move
         
 
@@ -66,7 +68,7 @@ def train():
     game = Game(10,3)
     i = 0
     record = game.get_max_move()
-
+    counter = 0
     while True:
         # get old state
         print(game.get_grill())
@@ -87,7 +89,7 @@ def train():
         # perform move and get new state
 
 
-        reward, counter, endgame = game.Tour(final_move, old_val = state_old[0][0])
+        reward, counter, endgame = game.Tour(final_move, old_val = state_old[0][0], counter = counter)
         state_new = agent.get_state(game)
 
         # train short memory
@@ -96,11 +98,11 @@ def train():
 
         # remember
         agent.remember(state_old, final_move, reward, state_new, endgame)
-
-        if endgame:
+        print(counter)
+        print("+++++++++++++++")
+        if endgame == True:
             # train long memory, plot result
-            game.reset()
-
+        
             agent.n_games += 1
             agent.train_long_memory()
 
@@ -110,11 +112,14 @@ def train():
 
             print('Game', agent.n_games, 'Score', counter, 'Record:', record)
 
-            plot_scores.append(counter)
+            plot_scores.append(record)
             total_score += counter
             mean_score = total_score / agent.n_games
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
+            game.reset()
+            counter=0
+
         print(i)
         i+=1
 

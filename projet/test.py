@@ -183,6 +183,10 @@ class Game() :
 
         Output : la fin de la partie
         """
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
         max_moves = np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
         endgame = False
         reward = 0

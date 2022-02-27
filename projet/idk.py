@@ -37,6 +37,8 @@ class QTrainer:
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
+        if type(done) == bool :
+            done =torch.tensor([done],dtype= torch.bool)
         # (n, x)
 
         if len(state.shape) == 1:
@@ -51,13 +53,20 @@ class QTrainer:
         pred = self.model(state)
 
         target = pred.clone()
-        for idx in range(len(done)):
-            Q_new = reward[idx]
-            if not done[idx]:
-                Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+        if len(done)==1 : 
+            Q_new = reward.item()
+            if not done.item():
+                Q_new = reward.item() + self.gamma * torch.max(self.model(next_state[0]))
 
-            target[idx][torch.argmax(action[idx]).item()] = Q_new
-    
+            target[0][torch.argmax(action[0]).item()] = Q_new
+        else : 
+            for idx in range(len(done)):
+                Q_new = reward[idx]
+                if not done[idx]:
+                    Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
+
+                target[idx][torch.argmax(action[idx]).item()] = Q_new
+        
         # 2: Q_new = r + y * max(next_predicted Q value) -> only do this if not done
         # pred.clone()
         # preds[argmax(action)] = Q_new
