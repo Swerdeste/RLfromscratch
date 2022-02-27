@@ -43,6 +43,7 @@ class Game() :
         self.grill = Game.GenerateGrille(self)
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
+        self.nb_col_active = self.nbr_color
 
 
     def colorstomoves(action):
@@ -168,6 +169,13 @@ class Game() :
                 if y != init :
                     return False
         return True
+    def get_unique(self):
+        distinctl = []
+        for x in self.grill : 
+            for y in x : 
+                if y not in distinctl :
+                    distinctl.append(y)
+        return len(distinctl)
 
     def Tour(self, action, old_val,counter = 0):
     
@@ -183,6 +191,8 @@ class Game() :
 
         Output : la fin de la partie
         """
+        FPS = 100
+        FPSCLOCK = pygame.time.Clock()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -205,15 +215,18 @@ class Game() :
         print(new_val)
         if old_val != new_val :
             counter +=1 
-            reward = 10
-
+            reward = 0
         elif old_val == new_val :
             reward = -10
         Game.MajCell(self ,new_val, old_val, 0,0)
         print(self.grill)
+        if endgame == False and Game.get_unique(self) < self.nb_col_active : 
+            reward = 20
+            self.nb_col_active = Game.get_unique(self)
         print(counter)
         Game.Get_Positions(self,self.grill,new_val)
         Game.ConstruGrille(self)
+        FPSCLOCK.tick(FPS)
         pygame.display.update()
         return reward, counter, endgame 
 

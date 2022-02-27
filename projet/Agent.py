@@ -7,15 +7,16 @@ from idk import *
 from helper import plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.03
+LR = 0.1
 
 class Agent() :
+
     def __init__(self) :
         self.n_games = 0
         self.epsilon = 0
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(10, 10, 4)
+        self.model = Linear_QNet(16,16,3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         
     
@@ -31,13 +32,13 @@ class Agent() :
         if random.randint(0, 200) > self.epsilon:
             move = random.randint(0, nb_col -1)
             final_move[move] = 1
-        #else : 
+        else : 
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)
             move = torch.argmax(prediction).item()
             print("-------",state0,"-------",prediction)
             print("++*fdfdd", move,"fdfdfd", final_move)
-            final_move[move] = 1
+            final_move[move%game.get_nb_col()] = 1
         return final_move
         
 
@@ -65,7 +66,7 @@ def train():
     plot_mean_scores = []
     total_score = 0
     agent = Agent()
-    game = Game(10,3)
+    game = Game(16,3)
     i = 0
     record = game.get_max_move()
     counter = 0
@@ -112,7 +113,7 @@ def train():
 
             print('Game', agent.n_games, 'Score', counter, 'Record:', record)
 
-            plot_scores.append(record)
+            plot_scores.append(counter)
             total_score += counter
             mean_score = total_score / agent.n_games
             plot_mean_scores.append(mean_score)
