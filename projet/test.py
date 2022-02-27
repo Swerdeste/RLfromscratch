@@ -37,15 +37,23 @@ class Game() :
         self.WINDOWHEIGHT = WINDOWHEIGHT
         self.DISPLAYSURF = DISPLAYSURF
         self.Matrixsize = Matrixsize 
-        self.grill = []
+        self.reset()
+
+    def reset(self) :
+        self.grill = Game.GenerateGrille(self)
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
-    def GenerateGrille(self) :
 
+
+    def colorstomoves(action):
+        return action.index(1)
+
+    def GenerateGrille(self) :
+        grill = []
         for col in range(self.width) :
             column = [random.randint(0,self.nbr_color-1) for line in range(self.width)]
-            self.grill.append(column)
-        return np.array(self.grill)
+            grill.append(column)
+        return np.array(grill)
 
     def LTCoordOfBox(self, boxx, boxy):
        # Returns the x and y of the left-topmost pixel of the xth & yth box.
@@ -61,6 +69,18 @@ class Game() :
                 r, g, b = COLORS[self.grill[y][x]]
 
                 pygame.draw.rect(DISPLAYSURF, (r, g, b), (left, top, Matrixsize, Matrixsize))
+
+    def get_nb_col(self) : 
+        return self.nbr_color
+
+
+    def get_max_move(self):
+        return np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
+
+
+    def Translation(action) :
+        idx = int(action.index(1))
+        return idx
 
 
     def MajCell(self ,new_val, old_val, pos_x, pos_y) : 
@@ -149,7 +169,7 @@ class Game() :
                     return False
         return True
 
-    def Tourpartour(self, old_val,listvalue, max_moves,counter = 0):
+    def Tour(self, action, old_val,counter = 0):
     
         """
         Description : Fonction recursive qui joue au tour par tour la partie
@@ -163,77 +183,46 @@ class Game() :
 
         Output : la fin de la partie
         """
-
+        max_moves = np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
+        endgame = False
+        reward = 0
         end = Game.AssertEnd(self)
         if counter == max_moves +1 : 
             #mb.showinfo("Defaite", "C'est perdu : " + str(counter) + " coups joués") 
-            return 
+            reward = - 100 
+            endgame = True
+            return  reward, counter, endgame
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
-            return 
-        new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
-        while new_val_str not in listvalue:
-            if new_val_str == "end" :
-                return #mb.showinfo("Quitté", "Vous avez arrété la partie")
-            
-            new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
-        new_val = int(new_val_str)
+            reward = 100 + 10*(max_moves - counter) 
+            endgame = True
+            return  reward, counter, endgame
+        new_val = Game.Translation(action)
+        print(new_val)
         if old_val != new_val :
             counter +=1 
+            reward = 10
+
+        elif old_val == new_val :
+            reward = -10
         Game.MajCell(self ,new_val, old_val, 0,0)
-        
         print(self.grill)
         print(counter)
         Game.Get_Positions(self,self.grill,new_val)
         Game.ConstruGrille(self)
         pygame.display.update()
-        Game.Tourpartour(self, new_val,listvalue, max_moves,counter)
+        return reward, counter, endgame 
+
+    def get_grill(self) :
+        return self.grill
 
     
-
-    def Partie(self) :
-        """
-        Description : Fonction qui produit une partie entiere
-
-        Input : 
-        - width : type = int, taille de la longueur de la grille de taille width x width
-        - nbr_color : type = int, nombre de couleur diférentes
     
-        Output : 
-        déroulement de toute la partie
-        """
-        max_moves = np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
-    
-    
-        self.grill = Game.GenerateGrille(self)
-        global COLORS, WINDOWWIDTH, WINDOWHEIGHT, DISPLAYSURF, FONT
-        root = tk.Tk()
-        root.withdraw()
-        FPS = 10
+une_p = Game(8,4)
 
-        WINDOWWIDTH = WINDOWHEIGHT = Matrixsize*self.width + 200
 
-        pygame.display.set_caption("Flood it!")
-        FPSCLOCK = pygame.time.Clock()
-        DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-        DISPLAYSURF.fill(GRAY)
-        for x in range(0,self.nbr_color ) :
-            PygameButton(COLORS[x],x * 25, 17, 25, 25, str(x)).Construction(DISPLAYSURF)
 
-        listvalue = listvalue = ["{}".format(i) for i in range(self.nbr_color)]
 
-        old_val= self.grill[0,0]
 
-    
-        print(self.grill)
 
-    
-        Game.ConstruGrille(self)
-        FPSCLOCK.tick(FPS)
 
-        pygame.display.update()
-
-        Game.Tourpartour(self, old_val, listvalue,max_moves)
-    
-une_p = Game(6,4)
-une_p.Partie()
