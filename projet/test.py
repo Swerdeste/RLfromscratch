@@ -208,7 +208,7 @@ class Game() :
             return  reward, counter, endgame
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
-            reward = 100 + 10*(max_moves - counter) 
+            reward = 100 + 20*(max_moves - counter) 
             endgame = True
             return  reward, counter, endgame
         new_val = Game.Translation(action)
@@ -221,7 +221,7 @@ class Game() :
         Game.MajCell(self ,new_val, old_val, 0,0)
         print(self.grill)
         if endgame == False and Game.get_unique(self) < self.nb_col_active : 
-            reward = 20
+            reward = 50
             self.nb_col_active = Game.get_unique(self)
         print(counter)
         Game.Get_Positions(self,self.grill,new_val)
