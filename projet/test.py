@@ -218,6 +218,14 @@ class Game() :
             reward = 0
         elif old_val == new_val :
             reward = -10
+        
+        # Ici j'implémente la stratégie diagonale (Louise D)
+        colors_on_the_diagonal = list(set(np.diagonal(self.grill))) # On récupère les couleurs dans la diagonale de la grille
+        if new_val in colors_on_the_diagonal:
+            reward += 10 # j'ai mis + 10 mais à voir ce que vous préférez
+
+
+
         Game.MajCell(self ,new_val, old_val, 0,0)
         print(self.grill)
         if endgame == False and Game.get_unique(self) < self.nb_col_active : 
