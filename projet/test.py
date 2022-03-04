@@ -369,7 +369,10 @@ class Game() :
             self.nb_col_active = Game.get_unique(self)
         #print(counter)
                 # Ici j'implémente la stratégie diagonale (Louise D)
-        colors_on_the_diagonal = list(set(np.diagonal(self.grill))).remove(old_val) # On récupère les couleurs dans la diagonale de la grille sauf celle qu'on a déjà choisi
+        colors_on_the_diagonal = list(set(np.diagonal(self.grill))) # On récupère les couleurs dans la diagonale de la grille sauf celle qu'on a déjà choisi
+        if old_val in colors_on_the_diagonal:
+            colors_on_the_diagonal.remove(old_val)
+            
         if new_val in colors_on_the_diagonal:
             reward += 60 # j'ai mis + 10 mais à voir ce que vous préférez
         Game.Get_Positions(self,new_val)
