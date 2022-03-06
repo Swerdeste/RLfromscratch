@@ -43,6 +43,8 @@ class Game() :
         self.reset()
 
     def reset(self) :
+        """Resets the game.
+        """
         self.grill = self.card.copy()
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
@@ -54,6 +56,11 @@ class Game() :
         return action.index(1)
 
     def GenerateGrille(self) :
+        """Generates the grill
+
+        Returns:
+            Array: The grill that was generated
+        """
         grill = []
         for col in range(self.width) :
             column = [random.randint(0,self.nbr_color-1) for line in range(self.width)]
@@ -61,6 +68,15 @@ class Game() :
         return np.array(grill)
 
     def LTCoordOfBox(self, boxx, boxy):
+        """Returns the x and y of the left-topmost pixel of the xth & yth box.
+
+        Args:
+            boxx (_type_): _description_
+            boxy (_type_): _description_
+
+        Returns:
+            _type_: _description_ # je ne suis pas sûre de ce qui est retourné ici je vous laisse changer
+        """
        # Returns the x and y of the left-topmost pixel of the xth & yth box.
         #xmargin = int((WINDOWWIDTH - (self.width * Matrixsize)) / 2)
         xmargin = 0
@@ -70,6 +86,8 @@ class Game() :
     
     
     def ConstruGrille(self):
+        """_summary_
+        """
         for x in range(self.width):
             for y in range(self.width):
                 left, top = Game.LTCoordOfBox(self,x, y)
@@ -86,6 +104,14 @@ class Game() :
 
 
     def Translation(action) :
+        """_summary_
+
+        Args:
+            action (_type_): l'action de l'agent
+
+        Returns:
+            int: l'id de cette action ?
+        """
         idx = int(action.index(1))
         return idx
 
@@ -122,10 +148,20 @@ class Game() :
             Game.MajCell(self ,new_val, old_val, pos_x, pos_y + 1) 
     
     def reinit_position(self):
+        """Reinitialise position
+        """
         self.positions = set()
 
 
     def get_position(self,couple = (0,0)):
+        """_summary_
+
+        Args:
+            couple (tuple, optional): _description_. Defaults to (0,0).
+
+        Returns:
+            set: set of all the positions
+        """
         #print(type(couple))
         obj = couple
         self.positions.add(obj)
@@ -135,6 +171,11 @@ class Game() :
         return pos
 
     def Get_Positions(self,val): 
+        """_summary_
+
+        Args:
+            val (_type_): _description_
+        """
         for a in self.map : 
             for e in a :
                 pos_x,pos_y = e[0],e[1]
@@ -166,6 +207,15 @@ class Game() :
                             self.positions.add((pos_x,pos_y))
 
     def del_Positions( self, pos, list_pos): 
+        """_summary_
+
+        Args:
+            pos (_type_): _description_
+            list_pos (_type_): _description_
+
+        Returns:
+            list: position ?
+        """
         position = ()
         
         pos_x,pos_y = pos[0], pos[1]
@@ -203,6 +253,15 @@ class Game() :
         return position
     
     def look_for_N(self, list_contour, list_pos) :
+        """_summary_
+
+        Args:
+            list_contour (list): _description_
+            list_pos (list): liste of all the positions
+
+        Returns:
+            set: _description_
+        """
         other = set()
         for val in list_contour :
             
@@ -239,6 +298,11 @@ class Game() :
 
 
     def possible_states(self,listvalue): 
+        """_summary_
+
+        Args:
+            listvalue (list): liste of values
+        """
         colors = [e for e in listvalue if e!= self.grill[0][0]]
         for e in colors: 
             state_bis = np.copy(self.grill)
@@ -263,6 +327,11 @@ class Game() :
         return self.positions
 
     def list_col(self):
+        """_summary_
+
+        Returns:
+            list: distinct columns
+        """
         distinctl = []
         for x in self.grill : 
             for y in x : 
@@ -271,6 +340,11 @@ class Game() :
         return distinctl
 
     def get_unique(self):
+        """_summary_
+
+        Returns:
+            int: number of columns
+        """
         distinctl = []
         for x in self.grill : 
             for y in x : 
@@ -279,6 +353,11 @@ class Game() :
         return len(distinctl)
 
     def Lookingforlonger(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         pos = Game.get_position(self)
         pos_clear = set()
         for couple in pos :
@@ -288,6 +367,11 @@ class Game() :
         return pos_clear,pos
 
     def lookingLong(self) : 
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         pos_clear,pos = Game.Lookingforlonger(self)
         listset = list(Game.look_for_N(self, list_contour = pos_clear,list_pos = pos))
         #print(listset[0][0],listset[0][1])
