@@ -358,7 +358,7 @@ class Game() :
         elif old_val == new_val : 
             reward = -10
         
-        # Ici j'implémente la stratégie diagonale (Louise D)
+        # Ici j'implémente la stratégie diagonale 
         colors_on_the_diagonal = list(set(np.diagonal(self.grill))) # On récupère les couleurs dans la diagonale de la grille
         if new_val in colors_on_the_diagonal:
             reward += 10 # j'ai mis + 10 mais à voir ce que vous préférez
