@@ -35,7 +35,7 @@ Dans le dossier projet, se trouvent trois fichiers importants :
 
 #### **Game.py**
 
-Ce document retranscrit une partie, sa construction en elle-même et tout ce qui peut être pratique, comme le lancement de cette dernière, la vérification des points de victoire et de défaite. C'est aussi dans ce fichier que sont introduit les rewards.
+Ce document retranscrit une partie, sa construction en elle-même et tout ce qui peut être pratique, comme le lancement de cette dernière, la vérification des points de victoire et de défaite. C'est aussi dans ce fichier que sont introduites les rewards.
 
 #### **Learning.py**
 Ce script est la partie NN de notre travail, il ne sert à rien de l'appeler directement. Ce script sert à entraîner notre model.
