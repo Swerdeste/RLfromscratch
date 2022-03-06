@@ -14,12 +14,25 @@ class PygameButton():
         self.font        = font
 
     def Construction(self, window):
+        """_summary_
+
+        Args:
+            window (_type_): _description_
+        """
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
         if self.text != None :
             text = self.font.render(str(self.text), 1, (0,0,0))
             window.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
 
     def EndAction(self,pos):
+        """_summary_
+
+        Args:
+            pos (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         dic = {}
         dic[0], dic[1] = False, None
         if pos[0] > self.x and pos[0] < self.x +self.width:
@@ -46,10 +59,24 @@ class Colors:
         self.width = width
 
     def Construction(self, window, COLORS):
+        """_summary_
+
+        Args:
+            window (_type_): _description_
+            COLORS (_type_): _description_
+        """
         pygame.draw.rect(window, COLORS[self.color], (self.x, self.y, 50, 50), 0)
 
     
     def EndAction(self, pos) :
+        """_summary_
+
+        Args:
+            pos (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         List_ = []
         if pos[0] > self.x and pos[0] < self.x + self.width:
             if pos[1] > self.y and pos[1] < self.y + self.width:

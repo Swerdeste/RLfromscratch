@@ -3,6 +3,16 @@ import numpy as np
 
 
 def reward(state, n_moves,strat): 
+    """_summary_
+
+    Args:
+        state (_type_): _description_
+        n_moves (_type_): _description_
+        strat (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     possibilities = possible_states(state)
     reward_list,actions = [],[]
     for e in possibilities : 
@@ -12,10 +22,26 @@ def reward(state, n_moves,strat):
     return reward_list,actions
 
 def get_strat(state,strat):
+    """_summary_
+
+    Args:
+        state (_type_): _description_
+        strat (_type_): _description_
+    """
     val = state[0][0]
     
 
 def possible_states(state, colors, last_value):
+    """_summary_
+
+    Args:
+        state (_type_): _description_
+        colors (_type_): _description_
+        last_value (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     colors = [e for e in colors if e!= last_value]
     states = {}
     for e in colors : 
@@ -25,6 +51,18 @@ def possible_states(state, colors, last_value):
     return states
 
 def generate_all_states(start,colors,n_moves,liste,max_moves): 
+    """_summary_
+
+    Args:
+        start (_type_): _description_
+        colors (_type_): _description_
+        n_moves (_type_): _description_
+        liste (_type_): _description_
+        max_moves (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if main.AssertEnd(start) or n_moves == max_moves:
         return start
     else : 
