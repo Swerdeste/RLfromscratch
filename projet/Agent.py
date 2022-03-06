@@ -2,8 +2,8 @@ import torch
 import random
 import numpy as np
 from collections import deque
-from test import Game
-from idk import *
+from Game import Game
+from Learning import *
 from helper import plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
