@@ -4,6 +4,12 @@ from IPython import display
 plt.ion()
 
 def plot(scores, mean_scores):
+    """_summary_
+
+    Args:
+        scores (_type_): _description_
+        mean_scores (_type_): _description_
+    """
     display.clear_output(wait=True)
     display.display(plt.gcf())
     plt.clf()

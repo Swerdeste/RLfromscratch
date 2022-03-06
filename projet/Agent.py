@@ -57,10 +57,23 @@ class Agent() :
         
 
     def remember(self,state, action, reward, next_state, done):
+        
+        """_summary_
+
+        Args:
+            state (_type_): _description_
+            action (_type_): _description_
+            reward (_type_): _description_
+            next_state (_type_): _description_
+            done (function): _description_
+        """
         self.memory.append((state.ravel(), action, reward, next_state.ravel(), done))
 
 
+
     def train_long_memory(self) :
+        """Train long memory
+        """
         if len(self.memory) > BATCH_SIZE:
             mini_sample = random.sample(self.memory, BATCH_SIZE) # list of tuples
         else:
@@ -70,12 +83,23 @@ class Agent() :
         self.trainer.train_step(states, actions, rewards, next_states, dones)
 
     def train_short_memory(self, state, action, reward, next_state, done) :
+        """Train short memory
+
+        Args:
+            state (_type_): _description_
+            action (_type_): _description_
+            reward (_type_): _description_
+            next_state (_type_): _description_
+            done (function): _description_
+        """
         self.trainer.train_step(state.ravel(), action, reward, next_state.ravel(), done)
 
 
 #################################### 
 
 def train():
+    """Train function
+    """
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
