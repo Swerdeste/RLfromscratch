@@ -1,6 +1,5 @@
 from hashlib import new
 import random
-from turtle import position
 import numpy as np
 import random, pygame, sys, pygame.font
 from tkinter import messagebox as mb
@@ -39,11 +38,11 @@ class Game() :
         self.WINDOWHEIGHT = width*MatrixSize
         self.DISPLAYSURF = pygame.display.set_mode((self.WINDOWWIDTH, self.WINDOWHEIGHT))
         self.Matrixsize = Matrixsize
-        self.card = Game.GenerateGrille(self) 
+        #self.card = Game.GenerateGrille(self) 
         self.reset()
 
     def reset(self) :
-        self.grill = self.card.copy()
+        self.grill = self.GenerateGrille()
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
         self.nb_col_active = self.nbr_color
@@ -82,7 +81,7 @@ class Game() :
 
     
     def get_max_move(self):
-        return np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
+        return np.round((25*(2*self.width)*self.nbr_color)/((21)*6))
 
 
     def Translation(action) :
@@ -124,6 +123,8 @@ class Game() :
     def reinit_position(self):
         self.positions = set()
 
+    def get_size(self) : 
+        return self.width**2
 
     def get_position(self,couple = (0,0)):
         #print(type(couple))
@@ -236,6 +237,10 @@ class Game() :
                     other.add(i)
         return other
 
+    def neighboors(self,old_val,):
+        
+        
+        pass 
 
 
     def possible_states(self,listvalue): 
@@ -340,8 +345,8 @@ class Game() :
         #    return  reward, counter, endgame
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
-            if counter == max_moves +1 :
-                reward = - 100
+            if counter >= max_moves +1 :
+                reward = - 1000
                 endgame = True
             else :  
                 reward = 100 + 50*(max_moves - counter) 
@@ -350,13 +355,13 @@ class Game() :
         new_val = Game.Translation(action)
         #print(new_val)
         listcolor = Game.list_col(self)
-
+        
         if old_val != new_val and new_val in listcolor :
             counter +=1 
             reward = 0
 
-        elif old_val == new_val : 
-            reward = -10
+        elif old_val == new_val or new_val not in listcolor : 
+            reward = -50
         
         # Ici j'implémente la stratégie diagonale (Louise D)
         colors_on_the_diagonal = list(set(np.diagonal(self.grill))) # On récupère les couleurs dans la diagonale de la grille
@@ -365,8 +370,6 @@ class Game() :
 
 
 
-        elif new_val not in listcolor :
-            reward = -50
             self.list_color = listcolor
         if new_val in Game.lookingLong(self):
             reward += 20
