@@ -16,7 +16,7 @@ class Agent() :
         self.epsilon = 0
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(size**2,256,3)
+        self.model = Linear_QNet(size**2,128,3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         
     
@@ -29,21 +29,30 @@ class Agent() :
         self.epsilon = 80 - self.n_games
         nb_col = game.get_nb_col()
         final_move = [0 for i in range(nb_col)] 
-        if random.randint(0, 500) <= 0:#self.epsilon:
+        """if random.randint(0, 500) <=self.epsilon:
             move = random.randint(0, nb_col -1)
             final_move[move] = 1
+        else :"""
+
+        state0 = torch.tensor(state.ravel(), dtype=torch.float)
+        prediction = self.model(state0)
+        #print(prediction)
+        moves = torch.argmax(prediction)
+        #print(moves)
+        move = moves.item() % game.get_nb_col()
+        #print("-------",state0,"-------",prediction)
+        #print("++*fdfdd", move,"fdfdfd", final_move)
+        if move == state[0][0]: 
+                new_moves = torch.topk(prediction,k=3)
+                new_move = new_moves[1][2].item()% game.get_nb_col()
+                
+                final_move[new_move] = 1
+                #print(final_move)
+
         else : 
-            state0 = torch.tensor(state.ravel(), dtype=torch.float)
-            prediction = self.model(state0)
-            #print(prediction)
-            moves = torch.argmax(prediction)
-            #print(moves)
-            move = moves.item()
-            #print("-------",state0,"-------",prediction)
-            #print("++*fdfdd", move,"fdfdfd", final_move)
-            final_move[move%game.get_nb_col()] = 1
-            #print(final_move)
-            #final_move[move%game.get_nb_col()] = 1
+            final_move[move] = 1
+
+        #final_move[move%game.get_nb_col()] = 1
         return final_move
         
 
@@ -70,8 +79,8 @@ def train():
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
-    agent = Agent(6)
-    game = Game(6,3)
+    agent = Agent(10)
+    game = Game(10,3)
     i = 0
     record = game.get_max_move()
     counter = 0
@@ -117,7 +126,7 @@ def train():
                 record = counter
                 agent.model.save()
 
-            print('Game', agent.n_games, 'Score', counter, 'Record:', record)
+            print('Game', agent.n_games, 'Score', counter, 'Record:', record, 'Max moves:',game.get_max_move())
             if agent.n_games <= 50 : 
                 plot_scores.append(counter)
                 total_score += counter

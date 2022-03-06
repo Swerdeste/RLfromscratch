@@ -38,11 +38,13 @@ class Game() :
         self.WINDOWHEIGHT = width*MatrixSize
         self.DISPLAYSURF = pygame.display.set_mode((self.WINDOWWIDTH, self.WINDOWHEIGHT))
         self.Matrixsize = Matrixsize
-        #self.card = Game.GenerateGrille(self) 
+        self.card = Game.GenerateGrille(self) 
+        self.old_position = {}
         self.reset()
 
     def reset(self) :
-        self.grill = self.GenerateGrille()
+        self.grill = self.card.copy()
+        #self.grill = self.GenerateGrille()
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
         self.nb_col_active = self.nbr_color
@@ -346,10 +348,9 @@ class Game() :
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
             if counter >= max_moves +1 :
-                reward = - 1000
-                endgame = True
+                reward += - 100*(counter - max_moves)
             else :  
-                reward = 100 + 50*(max_moves - counter) 
+                reward += 100 + 100*(max_moves - counter) 
             endgame = True
             return  reward, counter, endgame
         new_val = Game.Translation(action)
@@ -361,16 +362,13 @@ class Game() :
             reward = 0
 
         elif old_val == new_val or new_val not in listcolor : 
-            reward = -50
-        
-        # Ici j'implémente la stratégie diagonale (Louise D)
-        colors_on_the_diagonal = list(set(np.diagonal(self.grill))) # On récupère les couleurs dans la diagonale de la grille
-        if new_val in colors_on_the_diagonal:
-            reward += 10 # j'ai mis + 10 mais à voir ce que vous préférez
-
-
-
+            reward = -1000
             self.list_color = listcolor
+
+
+
+
+            
         if new_val in Game.lookingLong(self):
             reward += 20
         Game.MajCell(self ,new_val, old_val, 0,0)
@@ -380,8 +378,10 @@ class Game() :
             self.nb_col_active = Game.get_unique(self)
         #print(counter)
                 # Ici j'implémente la stratégie diagonale (Louise D)
-
+        if self.old_position == self.positions : 
+            reward -= 1000 
         Game.Get_Positions(self,new_val)
+        self.old_position = Game.getter_position(self)
         Game.ConstruGrille(self)
         FPSCLOCK.tick(FPS)
         pygame.display.update()
