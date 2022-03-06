@@ -37,4 +37,3 @@ Ce doncument, représente une partie ça construction en elle même et tout ce q
 
 #### **Learning.py**
  
- C
