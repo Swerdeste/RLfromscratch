@@ -1,9 +1,10 @@
 # RLfromscratch
-Reinforcment learning for ENSAI
-Ce projet a été par Angelina Denis, Arthur Chane-Sam, Louise Davy et  Zacharie Bouhin.
+Reinforcement learning for ENSAI
+
+Ce projet a été fait par Angelina Denis-Simoni, Arthur Chane-Sam, Louise Davy et  Zacharie Bouhin.
 ## Description de l'application
 ### Installation 
-Le but de cette application est de faire du Reinforcement Learning dans le cas d'une partie de *flood-it*
+Le but de cette application est de faire du Reinforcement Learning dans le cas d'une partie de *flood-it*.
 Tout se passe dans le fichier Agent.py, qui va traiter la partie "informatisée du jeu" :
 
 Tout d'abord, il faut installer tous les packages nécessaires avec :
@@ -13,7 +14,7 @@ Tout d'abord, il faut installer tous les packages nécessaires avec :
 
 -------
 
-Il est aussi nécessaire d'installer Tkinter, si l'installation de ce dernier échoue avec la ligne précédente, vous pouvez utiliser cette ligne suivante :
+Il est aussi nécessaire d'installer Tkinter, si l'installation de ce dernier échoue avec la ligne précédente, vous pouvez utiliser la ligne suivante :
 
 -------
 `pip install tk`
@@ -34,14 +35,14 @@ Dans le dossier projet, se trouvent trois fichiers importants :
 
 #### **Game.py**
 
-Ce document représente une partie sa construction en elle-même et tout ce qui peut être pratique, comme le lancement d'une partie, la vérification des points de victoire et de défaite. C'est aussi dans ce fichier que sont introduit les rewards.
+Ce document retranscrit une partie, sa construction en elle-même et tout ce qui peut être pratique, comme le lancement de cette dernière, la vérification des points de victoire et de défaite. C'est aussi dans ce fichier que sont introduit les rewards.
 
 #### **Learning.py**
-Ce script est la partie NN de notre travail, il ne sert a rien de l'appeler directement. Ce script sert a entraîner notre model.
+Ce script est la partie NN de notre travail, il ne sert à rien de l'appeler directement. Ce script sert à entraîner notre model.
 
  #### **Agent.py**
 
- C'est donc ce script qui va être le script principal, il est celui qui lance les parties jeu et RL, de notre projet. 
- En utilisant d'autre script comme **helper.py**, il sera plot, differente infos quant à l'avancée de notre étude.
+ C'est donc ce script qui va être le script principal, c'est celui qui lance les parties jeu et RL de notre projet. 
+ En utilisant d'autre script comme **helper.py**, vous pourrez représenter sous forme de graphique differentes informations quant à l'avancée de l'analyse.
 
  
