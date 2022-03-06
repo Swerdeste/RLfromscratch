@@ -376,7 +376,7 @@ class Game() :
             reward += 20
             self.nb_col_active = Game.get_unique(self)
         #print(counter)
-                # Ici j'implémente la stratégie diagonale (Louise D)
+                
 
         Game.Get_Positions(self,new_val)
         Game.ConstruGrille(self)
