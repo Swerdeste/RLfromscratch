@@ -28,7 +28,7 @@ class Game() :
     pygame.init()
 
 
-    def __init__(self,width, nbr_color, WINDOWWIDTH = WINDOWWIDTH, WINDOWHEIGHT = WINDOWHEIGHT, DISPLAYSURF = DISPLAYSURF,COLORS = COLORS ,font = FONT, MatrixSize = Matrixsize ) :
+    def __init__(self,width = 12, nbr_color = 4, WINDOWWIDTH = WINDOWWIDTH, WINDOWHEIGHT = WINDOWHEIGHT, DISPLAYSURF = DISPLAYSURF,COLORS = COLORS ,font = FONT, MatrixSize = Matrixsize ) :
         self.width = width
         self.nbr_color = nbr_color
         self.COLORS = COLORS
@@ -40,6 +40,10 @@ class Game() :
         self.grill = []
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
+
+    def colorstomoves(action):
+        return action.index(1)
+    
     def GenerateGrille(self) :
 
         for col in range(self.width) :
@@ -163,14 +167,16 @@ class Game() :
 
         Output : la fin de la partie
         """
-
+        reward = 0
         end = Game.AssertEnd(self)
         if counter == max_moves +1 : 
             #mb.showinfo("Defaite", "C'est perdu : " + str(counter) + " coups joués") 
-            return 
+            reward = - 100 
+            return reward
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
-            return 
+            reward = 100 + 10*(max_moves - counter) 
+            return reward
         new_val_str = input("Couleur de case ? mettre 'end' pour finir :  ")
         while new_val_str not in listvalue:
             if new_val_str == "end" :
@@ -235,5 +241,6 @@ class Game() :
 
         Game.Tourpartour(self, old_val, listvalue,max_moves)
     
-une_p = Game(6,4)
-une_p.Partie()
+une_p = Game(12,4)
+une_p.Get_Positions(une_p.ConstruGrille(),0)
+

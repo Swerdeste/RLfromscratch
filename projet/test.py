@@ -1,10 +1,12 @@
+from hashlib import new
 import random
+from turtle import position
 import numpy as np
 import random, pygame, sys, pygame.font
 from tkinter import messagebox as mb
 import tkinter as tk
 from buttons import *
-FONT = pygame.font.SysFont('arial', 20, True)
+FONT = pygame.font.SysFont('arial', 50, True)
 WHITE    = (255, 255, 255)
 BLACK    = (  0,   0,   0)
 RED      = (255,   0,   0)
@@ -12,7 +14,7 @@ GREEN    = (  0, 255,   0)
 BLUE     = (  0,   0, 255)
 YELLOW   = (255, 255,   0)
 ORANGE   = (255, 128,   0)
-PURPLE   = (128,   0, 200)
+PURPLE   = (128,   0, 500)
 PINK     = (255,   0, 255)
 GRAY     = (100, 100, 100)
 
@@ -33,17 +35,19 @@ class Game() :
         self.nbr_color = nbr_color
         self.COLORS = COLORS
         self.font = font
-        self.WINDOWWIDTH = WINDOWWIDTH
-        self.WINDOWHEIGHT = WINDOWHEIGHT
-        self.DISPLAYSURF = DISPLAYSURF
-        self.Matrixsize = Matrixsize 
+        self.WINDOWWIDTH = width*MatrixSize
+        self.WINDOWHEIGHT = width*MatrixSize
+        self.DISPLAYSURF = pygame.display.set_mode((self.WINDOWWIDTH, self.WINDOWHEIGHT))
+        self.Matrixsize = Matrixsize
+        self.card = Game.GenerateGrille(self) 
         self.reset()
 
     def reset(self) :
-        self.grill = Game.GenerateGrille(self)
+        self.grill = self.card.copy()
         self.positions = set()
         self.map = [[(i,j) for i in range(self.width)] for j in range(self.width)]
         self.nb_col_active = self.nbr_color
+        self.list_color = [i for i in range(self.nbr_color)]
 
 
     def colorstomoves(action):
@@ -58,8 +62,10 @@ class Game() :
 
     def LTCoordOfBox(self, boxx, boxy):
        # Returns the x and y of the left-topmost pixel of the xth & yth box.
-        xmargin = int((WINDOWWIDTH - (self.width * Matrixsize)) / 2)
-        ymargin = int((WINDOWHEIGHT - (self.width * Matrixsize)) / 2)
+        #xmargin = int((WINDOWWIDTH - (self.width * Matrixsize)) / 2)
+        xmargin = 0
+        #ymargin = int((WINDOWHEIGHT - (self.width * Matrixsize)) / 2)
+        ymargin = 0
         return (boxx * Matrixsize + xmargin, boxy * Matrixsize + ymargin)
     
     
@@ -74,7 +80,7 @@ class Game() :
     def get_nb_col(self) : 
         return self.nbr_color
 
-
+    
     def get_max_move(self):
         return np.round((25*(2*self.width)*self.nbr_color)/((14+14)*6))
 
@@ -115,37 +121,121 @@ class Game() :
         if pos_y < self.width - 1:
             Game.MajCell(self ,new_val, old_val, pos_x, pos_y + 1) 
     
-    def Get_Positions(self,grill,val,): 
-        
+    def reinit_position(self):
+        self.positions = set()
+
+
+    def get_position(self,couple = (0,0)):
+        #print(type(couple))
+        obj = couple
+        self.positions.add(obj)
+        Game.Get_Positions(self, self.grill[0,0])
+        pos = self.positions
+        Game.reinit_position(self)
+        return pos
+
+    def Get_Positions(self,val): 
         for a in self.map : 
             for e in a :
                 pos_x,pos_y = e[0],e[1]
                 if e in self.positions:
                     if pos_x > 0:
-                        if (pos_x-1,pos_y) not in self.positions and grill[pos_x-1][pos_y]==val : 
+                        if (pos_x-1,pos_y) not in self.positions and self.grill[pos_x-1][pos_y]==val : 
                             self.positions.add((pos_x-1,pos_y))
                     if pos_x <self.width-1:
-                        if (pos_x+1,pos_y) not in self.positions and grill[pos_x+1][pos_y]==val : 
+                        if (pos_x+1,pos_y) not in self.positions and self.grill[pos_x+1][pos_y]==val : 
                             self.positions.add((pos_x+1,pos_y))
                     if pos_y > 0:
-                        if (pos_x,pos_y-1) not in self.positions and grill[pos_x][pos_y-1]==val : 
+                        if (pos_x,pos_y-1) not in self.positions and self.grill[pos_x][pos_y-1]==val : 
                             self.positions.add((pos_x,pos_y-1))
                     if pos_y <self.width-1:
-                        if (pos_x,pos_y+1) not in self.positions and grill[pos_x][pos_y+1]==val : 
+                        if (pos_x,pos_y+1) not in self.positions and self.grill[pos_x][pos_y+1]==val : 
                             self.positions.add((pos_x,pos_y+1))
                 else : 
                     if pos_x > 0:
-                        if (pos_x-1,pos_y) in self.positions and grill[pos_x][pos_y]==val : 
+                        if (pos_x-1,pos_y) in self.positions and self.grill[pos_x][pos_y]==val : 
                             self.positions.add((pos_x,pos_y))
                     if pos_x <self.width-1:
-                        if (pos_x+1,pos_y) in self.positions and grill[pos_x][pos_y]==val : 
+                        if (pos_x+1,pos_y) in self.positions and self.grill[pos_x][pos_y]==val : 
                             self.positions.add((pos_x,pos_y))
                     if pos_y > 0:
-                        if (pos_x,pos_y)  in self.positions and grill[pos_x][pos_y]==val : 
+                        if (pos_x,pos_y)  in self.positions and self.grill[pos_x][pos_y]==val : 
                             self.positions.add((pos_x,pos_y))
                     if pos_y <self.width-1:
-                        if (pos_x,pos_y)  in self.positions and grill[pos_x][pos_y]==val : 
+                        if (pos_x,pos_y)  in self.positions and self.grill[pos_x][pos_y]==val : 
                             self.positions.add((pos_x,pos_y))
+
+    def del_Positions( self, pos, list_pos): 
+        position = ()
+        
+        pos_x,pos_y = pos[0], pos[1]
+        if pos_x == 0:
+            if pos_y == 0 :
+                if (pos_x,pos_y+1) not in list_pos or (pos_x+1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            elif pos_y == self.width -1 :
+                if (pos_x,pos_y-1) not in list_pos or (pos_x+1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            else : 
+                if (pos_x,pos_y-1) not in list_pos or (pos_x,pos_y+1) not in list_pos or (pos_x+1,pos_y) not in list_pos :
+                    position= (pos_x,pos_y)
+
+        elif pos_x <self.width-1 :
+            if pos_y == 0 :
+                if (pos_x,pos_y+1) not in list_pos or (pos_x+1,pos_y) not in list_pos or (pos_x-1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            elif pos_y == self.width -1 :
+                if (pos_x,pos_y-1) not in list_pos or (pos_x+1,pos_y) not in list_pos or (pos_x-1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            else : 
+                if (pos_x,pos_y-1) not in list_pos or (pos_x,pos_y+1) not in list_pos or (pos_x+1,pos_y) not in list_pos or (pos_x- 1,pos_y) not in list_pos :
+                    position= (pos_x,pos_y)
+        else : 
+            if pos_y == 0 :
+                if (pos_x,pos_y+1) not in list_pos or (pos_x-1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            elif pos_y == self.width -1 :
+                if (pos_x,pos_y-1) not in list_pos or (pos_x-1,pos_y) not in list_pos : 
+                    position= (pos_x,pos_y)
+            else : 
+                if (pos_x,pos_y-1) not in list_pos or (pos_x,pos_y+1) not in list_pos or (pos_x-1,pos_y) not in list_pos :
+                    position= (pos_x,pos_y)
+        return position
+    
+    def look_for_N(self, list_contour, list_pos) :
+        other = set()
+        for val in list_contour :
+            
+            pos_x,pos_y = val[0], val[1]
+            if pos_x == 0:
+                if pos_y == 0 :
+                    nei = [(pos_x, pos_y +1 ),(pos_x+1, pos_y)]
+
+                elif pos_y == self.width -1 :
+                    nei = [(pos_x,pos_y -1),(pos_x+1, pos_y)]
+
+                else :
+                    nei = [(pos_x,pos_y -1),(pos_x+1, pos_y), (pos_x,pos_y +1)]
+            elif pos_x <self.width-1 :
+                if pos_y == 0 :
+                    nei = [(pos_x, pos_y +1 ),(pos_x+1, pos_y),(pos_x-1, pos_y)]
+                elif pos_y == self.width -1 :
+                    nei = [(pos_x,pos_y -1), (pos_x+1, pos_y), (pos_x-1, pos_y)]
+                else :
+                    nei = [(pos_x,pos_y-1),(pos_x+1, pos_y), (pos_x-1, pos_y), (pos_x,pos_y +1)]
+            else : 
+                if pos_y == 0 :
+                    nei = [(pos_x, pos_y +1 ), (pos_x-1, pos_y)]
+                elif pos_y == self.width -1 :
+                    nei = [(pos_x,pos_y -1),(pos_x - 1, pos_y)]
+                else :
+                    nei = [(pos_x,pos_y -1),(pos_x-1, pos_y), (pos_x,pos_y +1)]
+
+            for i in nei : 
+                if i not in list_pos :
+                    other.add(i)
+        return other
+
 
 
     def possible_states(self,listvalue): 
@@ -169,6 +259,17 @@ class Game() :
                 if y != init :
                     return False
         return True
+    def getter_position(self) :
+        return self.positions
+
+    def list_col(self):
+        distinctl = []
+        for x in self.grill : 
+            for y in x : 
+                if y not in distinctl :
+                    distinctl.append(y)
+        return distinctl
+
     def get_unique(self):
         distinctl = []
         for x in self.grill : 
@@ -176,6 +277,37 @@ class Game() :
                 if y not in distinctl :
                     distinctl.append(y)
         return len(distinctl)
+
+    def Lookingforlonger(self):
+        pos = Game.get_position(self)
+        pos_clear = set()
+        for couple in pos :
+            A = Game.del_Positions(self,couple,pos)
+            if A != () :
+                pos_clear.add(A)
+        return pos_clear,pos
+
+    def lookingLong(self) : 
+        pos_clear,pos = Game.Lookingforlonger(self)
+        listset = list(Game.look_for_N(self, list_contour = pos_clear,list_pos = pos))
+        #print(listset[0][0],listset[0][1])
+
+        color = [self.grill[listset[0][0],listset[0][1]]]
+        #print(color)
+        ##print(type(listset[0]))
+        #print(Game.getter_position(self))
+        gamlist = Game.get_position(self,listset[0])
+        #print(gamlist)
+        lenth = len(gamlist)
+        for i in listset : 
+            if len(Game.get_position(self,i)) > lenth :
+                lenth = len(Game.get_position(self,i))
+                color = [self.grill[i[0],i[1]]]
+
+            elif len(Game.get_position(self,i)) == lenth :
+                color.append(self.grill[i[0],i[1]])
+        return color
+
 
     def Tour(self, action, old_val,counter = 0):
     
@@ -201,22 +333,29 @@ class Game() :
         endgame = False
         reward = 0
         end = Game.AssertEnd(self)
-        if counter == max_moves +1 : 
+        #if counter == max_moves +1 : 
             #mb.showinfo("Defaite", "C'est perdu : " + str(counter) + " coups joués") 
-            reward = - 100 
-            endgame = True
-            return  reward, counter, endgame
+        #    reward = - 100 
+        #    endgame = True
+        #    return  reward, counter, endgame
         if end == True: 
             #mb.showinfo("Victoire", "C'est fini en : " + str(counter) + " tour")
-            reward = 100 + 20*(max_moves - counter) 
+            if counter == max_moves +1 :
+                reward = - 100
+                endgame = True
+            else :  
+                reward = 100 + 50*(max_moves - counter) 
             endgame = True
             return  reward, counter, endgame
         new_val = Game.Translation(action)
-        print(new_val)
-        if old_val != new_val :
+        #print(new_val)
+        listcolor = Game.list_col(self)
+
+        if old_val != new_val and new_val in listcolor :
             counter +=1 
             reward = 0
-        elif old_val == new_val :
+
+        elif old_val == new_val : 
             reward = -10
         
         # Ici j'implémente la stratégie diagonale (Louise D)
@@ -226,13 +365,20 @@ class Game() :
 
 
 
+        elif new_val not in listcolor :
+            reward = -50
+            self.list_color = listcolor
+        if new_val in Game.lookingLong(self):
+            reward += 20
         Game.MajCell(self ,new_val, old_val, 0,0)
-        print(self.grill)
+        #print(self.grill)
         if endgame == False and Game.get_unique(self) < self.nb_col_active : 
-            reward = 50
+            reward += 20
             self.nb_col_active = Game.get_unique(self)
-        print(counter)
-        Game.Get_Positions(self,self.grill,new_val)
+        #print(counter)
+                # Ici j'implémente la stratégie diagonale (Louise D)
+
+        Game.Get_Positions(self,new_val)
         Game.ConstruGrille(self)
         FPSCLOCK.tick(FPS)
         pygame.display.update()
@@ -243,7 +389,13 @@ class Game() :
 
     
     
-une_p = Game(8,4)
+#une_p = Game(40,3)
+#print(une_p.get_grill())
+#print(une_p.get_position())
+#print(une_p.Lookingforlonger())
+#print(une_p.look_for_N(une_p.Lookingforlonger()))
+#print(une_p.lookingLong())
+
 
 
 
